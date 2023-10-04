@@ -1,0 +1,126 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.4;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@opengsn/contracts/src/interfaces/IRelayHub.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@opengsn/contracts/src/BaseRelayRecipient.sol";
+
+contract YDIYOI is
+    ERC721,
+    ERC721Enumerable,
+    ERC721URIStorage,
+    Ownable,
+    BaseRelayRecipient
+{
+    using Counters for Counters.Counter;
+
+    Counters.Counter private _tokenIdCounter;
+
+    IRelayHub public relayHubAddress;
+
+    string public override versionRecipient =
+        "2.2.3+opengsn.payablewithemit.irelayrecipient";
+
+    constructor(
+        address _trustedForwarder
+    ) ERC721("You Drink It, You Own It", "YDIYOI v.0g") {
+        // Configuración del forwarder confiable para GSN
+        _setTrustedForwarder(_trustedForwarder);
+    }
+
+    struct GasLimits {
+        uint256 acceptanceBudget;
+        uint256 postOverhead;
+        uint256 preRelayedCallGas;
+        uint256 postRelayedCallGas;
+    }
+
+    // Función para permitir al propietario cambiar la dirección del RelayHub
+    function setRelayHubAddress(address _relayHubAddress) external onlyOwner {
+        relayHubAddress = IRelayHub(_relayHubAddress);
+    }
+
+    // Función para realizar el minteo de un nuevo NFT
+    function safeMint(address to, string memory uri) public {
+        // Verifica si la llamada proviene de un forwarder confiable
+
+        uint256 tokenId = _tokenIdCounter.current();
+        _tokenIdCounter.increment();
+        _safeMint(to, tokenId);
+        _setTokenURI(tokenId, uri);
+    }
+
+    // Las siguientes funciones son overrides requeridos por Solidity para ERC721 y GSN.
+
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal override(ERC721, ERC721Enumerable) {
+        super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    function _burn(
+        uint256 tokenId
+    ) internal override(ERC721, ERC721URIStorage) {
+        super._burn(tokenId);
+    }
+
+    function tokenURI(
+        uint256 tokenId
+    ) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+        return super.tokenURI(tokenId);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view override(ERC721, ERC721Enumerable) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
+
+    // Función para obtener el costo del gas para el remitente (usado por GSN)
+    function getGasLimits() external view returns (GasLimits memory limits) {
+        // Definir aquí los límites de gas adecuados para tu contrato
+        // Puedes ajustarlos según tus necesidades específicas
+        limits.acceptanceBudget = 15000; // Presupuesto para el paymaster
+        limits.postOverhead = 1500; // Gasto adicional para postRelayedCall
+        limits.preRelayedCallGas = 100000; // Gas necesario para preRelayedCall
+        limits.postRelayedCallGas = 20000; // Gas necesario para postRelayedCall
+    }
+
+    // Función para manejar la llamada previa a la retransmisión (usada por GSN)
+    function preRelayedCall(
+        GsnTypes.RelayRequest calldata relayRequest,
+        bytes calldata approvalData,
+        uint256 maxPossibleGas
+    ) external returns (bytes memory context, bool rejectOnRecipientRevert) {
+        // Implementa aquí la lógica de pre-relayed call si es necesario
+        // En este contrato de ejemplo, no se realizan verificaciones adicionales
+        (relayRequest, approvalData, maxPossibleGas);
+        return ("", false);
+    }
+
+    function _msgSender()
+        internal
+        view
+        virtual
+        override(Context, BaseRelayRecipient)
+        returns (address)
+    {
+        return BaseRelayRecipient._msgSender();
+    }
+
+    function _msgData()
+        internal
+        view
+        virtual
+        override(Context, BaseRelayRecipient)
+        returns (bytes calldata)
+    {
+        return BaseRelayRecipient._msgData();
+    }
+}
