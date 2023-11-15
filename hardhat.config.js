@@ -18,13 +18,11 @@ module.exports = {
     OptimismTestnet: {
       url: "https://goerli.optimism.io",
       accounts: [PRIVATE_KEY],
-      gasPrice: 1000000000,
     },
 
     Optimism: {
       url: "https://mainnet.optimism.io",
       accounts: [PRIVATE_KEY],
-      gasPrice: 1000000000,
     },
 
     hardhat: {},
