@@ -1,30 +1,33 @@
 const { ethers } = require("hardhat");
 const { writeFileSync } = require("fs");
 
-async function deployYDIYOI(minimalForwarderAddress) {
-  const Contract = await ethers.getContractFactory("YDIYOI");
-  const ydiyoi = await Contract.deploy(minimalForwarderAddress);
-  await ydiyoi.deployed();
+async function deploy(name, ...params) {
+  const Contract = await ethers.getContractFactory(name);
+  return await Contract.deploy(...params).then((f) => f.deployed());
+}
+
+async function main() {
+  const registry = await deploy(
+    "YDIYOI",
+    "0xa75106E0F8261dfFE5cE35eB96F043BA90Be7c51"
+  );
 
   writeFileSync(
-    "deploy-ydiyoi.json",
+    "deploy.json",
     JSON.stringify(
       {
-        YDIYOI: ydiyoi.address,
+        Registry: registry.address,
       },
       null,
       2
     )
   );
 
-  console.log(`YDIYOI deployed at: ${ydiyoi.address}`);
+  console.log(`Registry: ${registry.address}`);
 }
 
 if (require.main === module) {
-  // Replace 'minimalForwarderAddress' with the actual address obtained from the MinimalForwarder deployment
-  const minimalForwarderAddress = "0xa75106E0F8261dfFE5cE35eB96F043BA90Be7c51";
-
-  deployYDIYOI(minimalForwarderAddress)
+  main()
     .then(() => process.exit(0))
     .catch((error) => {
       console.error(error);
