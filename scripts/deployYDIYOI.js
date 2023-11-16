@@ -22,7 +22,7 @@ async function deployYDIYOI(minimalForwarderAddress) {
 
 if (require.main === module) {
   // Replace 'minimalForwarderAddress' with the actual address obtained from the MinimalForwarder deployment
-  const minimalForwarderAddress = "0xf8bcB2E01b0D18fbbb82D04201512c9c67Af9755";
+  const minimalForwarderAddress = "0xa75106E0F8261dfFE5cE35eB96F043BA90Be7c51";
 
   deployYDIYOI(minimalForwarderAddress)
     .then(() => process.exit(0))
