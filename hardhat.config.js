@@ -13,7 +13,7 @@ module.exports = {
     apiKey: "ZQS6Z5DYYI9GBH5HTWMMZ3UEQZKU1X273I",
   },
 
-  defaultNetwork: "PolygonMumbai",
+  defaultNetwork: "OptimismTestnet",
   networks: {
     OptimismTestnet: {
       url: "https://goerli.optimism.io",

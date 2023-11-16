@@ -1,5 +1,6 @@
 const { ethers } = require("hardhat");
 const { writeFileSync } = require("fs");
+// let nonceManual=4;
 
 async function deploy(name, ...params) {
   const Contract = await ethers.getContractFactory(name);
