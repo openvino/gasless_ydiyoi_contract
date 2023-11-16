@@ -9,7 +9,8 @@ async function deploy(name, ...params) {
 async function main() {
   const registry = await deploy(
     "YDIYOI",
-    "0xa75106E0F8261dfFE5cE35eB96F043BA90Be7c51"
+    "0x0746396e913b04029f36f2F5d81b767a380575A0", //PRIMERO 
+    { gasLimit: 5000000, nonce: 43 }
   );
 
   writeFileSync(

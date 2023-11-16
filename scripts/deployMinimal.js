@@ -3,7 +3,10 @@ const { writeFileSync } = require("fs");
 
 async function deployMinimalForwarder() {
   const Contract = await ethers.getContractFactory("MinimalForwarder");
-  const minimalForwarder = await Contract.deploy();
+  const minimalForwarder = await Contract.deploy({
+    gasLimit: 5000000,
+    nonce: 42,
+  });
   await minimalForwarder.deployed();
 
   writeFileSync(
