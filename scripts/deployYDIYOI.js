@@ -9,8 +9,8 @@ async function deploy(name, ...params) {
 async function main() {
   const registry = await deploy(
     "YDIYOI",
-    "0x0746396e913b04029f36f2F5d81b767a380575A0", //PRIMERO 
-    { gasLimit: 5000000, nonce: 43 }
+    "0x9631336e1ec31B71F619C1EC0EC5145BeF46088E", //PRIMERO  este es el contrato del minimalforwarder
+    { gasLimit: 5000000} // agregar nonce: n si es necesario
   );
 
   writeFileSync(
